@@ -1,0 +1,183 @@
+---
+// C:\Users\SnowIce\Documents\antigravity\keen-hopper\src\pages\settings.astro
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Settings" activeTab="settings">
+  <div class="settings-page animate-fade-in">
+    <div class="card settings-card">
+      <h3 class="card-title">Preferences</h3>
+      
+      <!-- Zodiac System -->
+      <div class="settings-section">
+        <h4 class="settings-sec-title">Astrological Framework</h4>
+        
+        <div class="settings-item">
+          <div class="settings-item-text">
+            <h5>Zodiac Calculation</h5>
+            <p>Select whether to calculate positions relative to constellations (Sidereal) or seasonal positions (Tropical).</p>
+          </div>
+          <div class="settings-item-control">
+            <select id="setting-system" class="form-control select-control">
+              <option value="vedic">Vedic / Sidereal (Lahiri)</option>
+              <option value="western">Western / Tropical</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <hr class="divider" />
+      
+      <!-- House System -->
+      <div class="settings-section">
+        <h4 class="settings-sec-title">House Divisions</h4>
+        
+        <div class="settings-item">
+          <div class="settings-item-text">
+            <h5>House Division Method</h5>
+            <p>Select how to divide the horoscope houses. Whole Sign makes the entire sign of Lagna House 1. Equal House aligns House 1 cusp exactly to Lagna degrees.</p>
+          </div>
+          <div class="settings-item-control">
+            <select id="setting-house-system" class="form-control select-control">
+              <option value="whole_sign">Whole Sign House System</option>
+              <option value="equal_house">Equal House System</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <hr class="divider" />
+      
+      <!-- Chart Format -->
+      <div class="settings-section">
+        <h4 class="settings-sec-title">Visualization Style</h4>
+        
+        <div class="settings-item">
+          <div class="settings-item-text">
+            <h5>Kundli Chart Format</h5>
+            <p>Select the preferred layout to draw the birth chart.</p>
+          </div>
+          <div class="settings-item-control">
+            <select id="setting-chart-style" class="form-control select-control">
+              <option value="north_indian">North Indian (Diamond houses)</option>
+              <option value="south_indian">South Indian (Clockwise grid)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="save-status" id="save-status-msg">
+        Preferences saved automatically!
+      </div>
+      
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { getAppSettings, saveAppSettings } from '../lib/db';
+
+  const systemSelect = document.getElementById('setting-system') as HTMLSelectElement;
+  const houseSelect = document.getElementById('setting-house-system') as HTMLSelectElement;
+  const chartSelect = document.getElementById('setting-chart-style') as HTMLSelectElement;
+  const statusMsg = document.getElementById('save-status-msg');
+
+  function showStatus() {
+    if (!statusMsg) return;
+    statusMsg.classList.add('visible');
+    setTimeout(() => {
+      statusMsg.classList.remove('visible');
+    }, 2000);
+  }
+
+  // 1. Pre-fill selections
+  const currentSettings = getAppSettings();
+  if (systemSelect) systemSelect.value = currentSettings.system;
+  if (houseSelect) houseSelect.value = currentSettings.houseSystem;
+  if (chartSelect) chartSelect.value = currentSettings.chartStyle;
+
+  // 2. Add event listeners for instant saves
+  const setupChangeListener = (el: HTMLSelectElement, key: 'system' | 'houseSystem' | 'chartStyle') => {
+    if (el) {
+      el.addEventListener('change', () => {
+        saveAppSettings({ [key]: el.value });
+        showStatus();
+      });
+    }
+  };
+
+  setupChangeListener(systemSelect, 'system');
+  setupChangeListener(houseSelect, 'houseSystem');
+  setupChangeListener(chartSelect, 'chartStyle');
+</script>
+
+<style>
+  .settings-page {
+    padding: 16px;
+  }
+
+  .settings-card {
+    max-width: 440px;
+    margin: 0 auto;
+    padding-bottom: 24px;
+  }
+
+  .settings-section {
+    padding: 12px 0;
+  }
+
+  .settings-sec-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--md-sys-color-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .settings-item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .settings-item-text h5 {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 4px;
+  }
+
+  .settings-item-text p {
+    font-size: 0.78rem;
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: 1.4;
+  }
+
+  .select-control {
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .divider {
+    border: none;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    margin: 8px 0;
+    opacity: 0.5;
+  }
+
+  /* Auto Save Toast-like Status Message */
+  .save-status {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--md-sys-color-secondary);
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    margin-top: 20px;
+  }
+
+  .save-status.visible {
+    opacity: 1;
+  }
+</style>

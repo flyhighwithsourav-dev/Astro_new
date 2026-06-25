@@ -1,0 +1,472 @@
+---
+// C:\Users\SnowIce\Documents\antigravity\keen-hopper\src\pages\horoscope.astro
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Birth Chart Details">
+  <!-- Top header with back button -->
+  <div class="horoscope-header">
+    <a href="/" class="back-link" aria-label="Go back to Dashboard">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Dashboard
+    </a>
+    <div class="header-profile-name" id="header-name">Loading...</div>
+  </div>
+
+  <!-- Tab Bar -->
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="chart">Chart</button>
+    <button class="tab-btn" data-tab="predictions">Predictions</button>
+    <button class="tab-btn" data-tab="technical">Technical</button>
+  </nav>
+
+  <!-- Content Container -->
+  <div class="horoscope-content">
+    
+    <!-- Tab 1: Chart -->
+    <div id="tab-content-chart" class="tab-panel active animate-fade-in">
+      <div id="svg-chart-container" class="svg-container">
+        <!-- SVG rendered here client-side -->
+      </div>
+      
+      <div class="card placements-card">
+        <h4 class="card-title">Planetary Placements</h4>
+        <div class="table-responsive">
+          <table class="placements-table">
+            <thead>
+              <tr>
+                <th>Planet</th>
+                <th>Sign</th>
+                <th>Deg</th>
+                <th>House</th>
+                <th>Dir</th>
+              </tr>
+            </thead>
+            <tbody id="placements-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab 2: Predictions -->
+    <div id="tab-content-predictions" class="tab-panel hidden animate-fade-in">
+      <div class="predictions-intro">
+        <p>Astrological insights matched via the rule-based **PLR (Planet, Lord, Rasi) engine**.</p>
+      </div>
+      
+      <!-- Container for matched predictions grouped by category -->
+      <div id="predictions-categories" class="categories-list">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+    
+    <!-- Tab 3: Technical Details -->
+    <div id="tab-content-technical" class="tab-panel hidden animate-fade-in">
+      <div class="card tech-card">
+        <h4 class="card-title">Astronomical Parameters</h4>
+        <ul class="tech-list">
+          <li>
+            <span class="tech-label">Zodiac System</span>
+            <span class="tech-value" id="tech-zodiac-system">-</span>
+          </li>
+          <li>
+            <span class="tech-label">House System</span>
+            <span class="tech-value" id="tech-house-system">-</span>
+          </li>
+          <li>
+            <span class="tech-label">Lahiri Ayanamsa</span>
+            <span class="tech-value" id="tech-ayanamsa">-</span>
+          </li>
+          <li>
+            <span class="tech-label">Greenwich Sidereal Time (GST)</span>
+            <span class="tech-value" id="tech-gst">-</span>
+          </li>
+          <li>
+            <span class="tech-label">Local Sidereal Time (LST)</span>
+            <span class="tech-value" id="tech-lst">-</span>
+          </li>
+          <li>
+            <span class="tech-label">Julian Day</span>
+            <span class="tech-value" id="tech-julian-day">-</span>
+          </li>
+          <li>
+            <span class="tech-label">Terrestrial Latitude</span>
+            <span class="tech-value" id="tech-lat">-</span>
+          </li>
+          <li>
+            <span class="tech-label">Terrestrial Longitude</span>
+            <span class="tech-value" id="tech-lng">-</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+  </div>
+</Layout>
+
+<script>
+  import { generateHoroscope } from '../lib/astrologyEngine';
+  import { generatePredictions } from '../lib/plrEngine';
+  import { getSavedProfiles, getAppSettings } from '../lib/db';
+  import { renderSvgChart } from '../lib/chartRenderer';
+  import rulesJson from '../data/rules.json';
+
+  // State
+  let horoscopeData: any = null;
+
+  function loadAndRender() {
+    const params = new URLSearchParams(window.location.search);
+    const profileId = params.get('id');
+    
+    let name = '';
+    let dob = '';
+    let tob = '';
+    let lat = 0;
+    let lng = 0;
+    let loc = '';
+
+    if (profileId) {
+      // Load saved profile
+      const profiles = getSavedProfiles();
+      const profile = profiles.find(p => p.id === profileId);
+      if (!profile) {
+        alert("Profile not found!");
+        window.location.href = '/';
+        return;
+      }
+      name = profile.name;
+      dob = profile.birthDate;
+      tob = profile.birthTime;
+      lat = profile.latitude;
+      lng = profile.longitude;
+      loc = profile.locationName;
+    } else {
+      // Load raw query params
+      name = params.get('name') || 'Guest';
+      dob = params.get('dob') || new Date().toISOString().substring(0, 10);
+      tob = params.get('tob') || '12:00';
+      lat = parseFloat(params.get('lat') || '0');
+      lng = parseFloat(params.get('lng') || '0');
+      loc = params.get('loc') || 'Unknown';
+    }
+
+    // Update Header
+    const headerNameEl = document.getElementById('header-name');
+    if (headerNameEl) headerNameEl.textContent = name;
+
+    // Load App Settings
+    const settings = getAppSettings();
+
+    // 1. Calculate Horoscope
+    horoscopeData = generateHoroscope(name, dob, tob, lat, lng, settings.system, settings.houseSystem);
+
+    // 2. Render SVG Chart
+    const chartContainer = document.getElementById('svg-chart-container');
+    if (chartContainer) {
+      chartContainer.innerHTML = renderSvgChart(horoscopeData, settings.chartStyle === 'south_indian' ? 'south_indian' : 'north_indian');
+    }
+
+    // 3. Populate Placements Table
+    const tbody = document.getElementById('placements-tbody');
+    if (tbody) {
+      tbody.innerHTML = '';
+      
+      // Add Ascendant (Lagna) first
+      const ascRow = document.createElement('tr');
+      ascRow.className = 'ascendant-row';
+      ascRow.innerHTML = `
+        <td><strong>Ascendant</strong></td>
+        <td>${horoscopeData.ascendant.signName}</td>
+        <td>${horoscopeData.ascendant.degreeInSign.toFixed(2)}°</td>
+        <td>1</td>
+        <td>Dir</td>
+      `;
+      tbody.appendChild(ascRow);
+
+      // Add Planets
+      horoscopeData.planets.forEach((p: any) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${p.name}</td>
+          <td>${p.signName}</td>
+          <td>${p.degreeInSign.toFixed(2)}°</td>
+          <td>${p.house}</td>
+          <td class="${p.isRetrograde ? 'retro-color' : ''}">${p.isRetrograde ? 'Retro' : 'Dir'}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // 4. Run PLR Engine and Populate Predictions
+    const predictions = generatePredictions(horoscopeData, rulesJson as any);
+    const predictionsContainer = document.getElementById('predictions-categories');
+    if (predictionsContainer) {
+      predictionsContainer.innerHTML = '';
+      
+      const categories = [
+        { key: 'personality', title: 'Personality & Temperament', icon: '🧠' },
+        { key: 'career', title: 'Career & Life Purpose', icon: '💼' },
+        { key: 'relationships', title: 'Love & Relationships', icon: '❤️' },
+        { key: 'wealth', title: 'Wealth & Prosperity', icon: '💰' }
+      ];
+
+      categories.forEach(cat => {
+        const catPredictions = predictions.filter(p => p.category === cat.key);
+        
+        const catCard = document.createElement('div');
+        catCard.className = 'card category-card';
+        
+        let predictionsHtml = '';
+        if (catPredictions.length === 0) {
+          predictionsHtml = `<p class="no-prediction-text">No active conditions matched for this category in Version 1. Extend rules in rules.json to add more insights!</p>`;
+        } else {
+          catPredictions.forEach(pred => {
+            predictionsHtml += `
+              <div class="prediction-item">
+                <h5 class="prediction-item-title">${pred.title}</h5>
+                <p class="prediction-item-body">${pred.prediction}</p>
+              </div>
+            `;
+          });
+        }
+        
+        catCard.innerHTML = `
+          <h4 class="card-title"><span class="cat-icon">${cat.icon}</span> ${cat.title}</h4>
+          <div class="predictions-list">
+            ${predictionsHtml}
+          </div>
+        `;
+        predictionsContainer.appendChild(catCard);
+      });
+    }
+
+    // 5. Populate Tech Details
+    const updateTech = (id: string, val: string) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
+
+    updateTech('tech-zodiac-system', settings.system === 'vedic' ? 'Sidereal (Vedic)' : 'Tropical (Western)');
+    updateTech('tech-house-system', settings.houseSystem === 'whole_sign' ? 'Whole Sign Houses' : 'Equal Houses');
+    updateTech('tech-ayanamsa', settings.system === 'vedic' ? `${horoscopeData.ayanamsa.toFixed(4)}°` : 'None (Western)');
+    updateTech('tech-gst', `${(horoscopeData.lst / 15).toFixed(4)}h`); // approximate GST
+    updateTech('tech-lst', `${(horoscopeData.lst).toFixed(2)}°`);
+    updateTech('tech-julian-day', horoscopeData.julianDay.toFixed(4));
+    updateTech('tech-lat', `${lat.toFixed(4)}° ${lat >= 0 ? 'N' : 'S'}`);
+    updateTech('tech-lng', `${lng.toFixed(4)}° ${lng >= 0 ? 'E' : 'W'}`);
+  }
+
+  // Setup tab toggling
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Deactivate all tabs
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanels.forEach(p => p.classList.add('hidden'));
+      
+      // Activate clicked tab
+      btn.classList.add('active');
+      const tabId = btn.getAttribute('data-tab');
+      const activePanel = document.getElementById(`tab-content-${tabId}`);
+      if (activePanel) activePanel.classList.remove('hidden');
+    });
+  });
+
+  // Initial load
+  loadAndRender();
+</script>
+
+<style>
+  /* Header with Back Button */
+  .horoscope-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background-color: var(--md-sys-color-surface);
+    border-bottom: 1.5px solid var(--md-sys-color-outline-variant);
+  }
+
+  .back-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--md-sys-color-primary);
+    font-family: var(--font-family-title);
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: transform 0.2s ease;
+  }
+
+  .back-link:hover {
+    transform: translateX(-4px);
+  }
+
+  .back-link svg {
+    color: var(--md-sys-color-primary);
+  }
+
+  .header-profile-name {
+    font-family: var(--font-family-title);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  /* Horoscope content layout */
+  .horoscope-content {
+    padding-bottom: 24px;
+  }
+
+  .svg-container {
+    display: flex;
+    justify-content: center;
+    background: radial-gradient(circle at center, #1b1236 0%, #0b0717 100%);
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  /* Table styles */
+  .placements-card {
+    margin-top: 16px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  .placements-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    text-align: left;
+  }
+
+  .placements-table th {
+    color: var(--md-sys-color-primary);
+    font-weight: 700;
+    padding: 10px;
+    border-bottom: 2px solid var(--md-sys-color-outline-variant);
+    font-family: var(--font-family-title);
+  }
+
+  .placements-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+  }
+
+  .placements-table tr:hover td {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+
+  .placements-table .ascendant-row td {
+    background-color: rgba(230, 192, 252, 0.05);
+    border-bottom: 1.5px solid var(--md-sys-color-outline-variant);
+  }
+
+  .retro-color {
+    color: var(--md-sys-color-secondary) !important;
+    font-weight: 600;
+  }
+
+  /* Predictions styles */
+  .predictions-intro {
+    padding: 16px;
+    font-size: 0.85rem;
+    color: var(--md-sys-color-on-surface-variant);
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .category-card {
+    margin-bottom: 16px;
+  }
+
+  .cat-icon {
+    font-size: 1.2rem;
+    margin-right: 4px;
+  }
+
+  .prediction-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 0;
+  }
+
+  .prediction-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .prediction-item-title {
+    font-family: var(--font-family-title);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--md-sys-color-secondary);
+    margin-bottom: 4px;
+  }
+
+  .prediction-item-body {
+    font-size: 0.88rem;
+    color: var(--md-sys-color-on-surface);
+    line-height: 1.5;
+  }
+
+  .no-prediction-text {
+    font-size: 0.85rem;
+    color: var(--md-sys-color-on-surface-variant);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  /* Technical styles */
+  .tech-card {
+    margin-top: 16px;
+  }
+
+  .tech-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .tech-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.88rem;
+  }
+
+  .tech-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .tech-label {
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: 500;
+  }
+
+  .tech-value {
+    color: #ffffff;
+    font-family: var(--font-family-title);
+    font-weight: 600;
+  }
+
+  /* Utility classes */
+  .hidden {
+    display: none !important;
+  }
+</style>

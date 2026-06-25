@@ -1,0 +1,211 @@
+[
+  {
+    "id": "sun_aries",
+    "category": "personality",
+    "condition": {
+      "type": "planet_sign",
+      "planet": "Sun",
+      "sign": "Aries"
+    },
+    "title": "Sun in Aries (Exalted)",
+    "prediction": "The Sun is highly powerful in Aries. You possess natural leadership capabilities, courage, and a pioneering spirit. You are self-reliant, dynamic, and have a strong drive to succeed, though you must guard against impulsiveness and impatience."
+  },
+  {
+    "id": "sun_libra",
+    "category": "personality",
+    "condition": {
+      "type": "planet_sign",
+      "planet": "Sun",
+      "sign": "Libra"
+    },
+    "title": "Sun in Libra (Debilitated)",
+    "prediction": "With the Sun in Libra, you seek harmony, balance, and partnership. You are cooperative and diplomatic, but you may sometimes struggle with self-confidence, indecision, or compromising your own needs to please others."
+  },
+  {
+    "id": "sun_cancer",
+    "category": "personality",
+    "condition": {
+      "type": "planet_sign",
+      "planet": "Sun",
+      "sign": "Cancer"
+    },
+    "title": "Sun in Cancer",
+    "prediction": "You are deeply intuitive, emotional, and protective of your loved ones. Family and home are of central importance to you. You lead with empathy and care, though you may occasionally be sensitive to criticism."
+  },
+  {
+    "id": "sun_leo",
+    "category": "personality",
+    "condition": {
+      "type": "planet_sign",
+      "planet": "Sun",
+      "sign": "Leo"
+    },
+    "title": "Sun in Leo (Own Sign)",
+    "prediction": "The Sun rules Leo, making this placement radiant and expressive. You are creative, proud, generous, and enjoy being the center of attention. You possess a strong sense of personal authority and a warm, loyal heart."
+  },
+  {
+    "id": "moon_taurus",
+    "category": "personality",
+    "condition": {
+      "type": "planet_sign",
+      "planet": "Moon",
+      "sign": "Taurus"
+    },
+    "title": "Moon in Taurus (Exalted)",
+    "prediction": "The Moon is exalted in Taurus, indicating emotional stability and peace of mind. You seek security, comfort, and sensory pleasures. You are reliable, calm in crises, and possess deep artistic or aesthetic sensibilities."
+  },
+  {
+    "id": "moon_scorpio",
+    "category": "personality",
+    "condition": {
+      "type": "planet_sign",
+      "planet": "Moon",
+      "sign": "Scorpio"
+    },
+    "title": "Moon in Scorpio (Debilitated)",
+    "prediction": "The Moon in Scorpio indicates intense, deep, and secretive emotions. You have powerful psychological insights and intuition. You experience life deeply, but you must work on letting go of emotional grudges and fear of vulnerability."
+  },
+  {
+    "id": "sun_house_10",
+    "category": "career",
+    "condition": {
+      "type": "planet_house",
+      "planet": "Sun",
+      "house": 10
+    },
+    "title": "Sun in the 10th House",
+    "prediction": "This is a highly auspicious placement for professional success. You desire authority, status, and recognition. You excel in careers related to management, government, or public life, and you feel a strong calling to achieve something significant."
+  },
+  {
+    "id": "jupiter_house_1",
+    "category": "personality",
+    "condition": {
+      "type": "planet_house",
+      "planet": "Jupiter",
+      "house": 1
+    },
+    "title": "Jupiter in the 1st House",
+    "prediction": "Jupiter in the Ascendant brings optimism, wisdom, and benevolence. You have a cheerful disposition, a strong sense of ethics, and an expansive personality. You are seen as a teacher or guide by others and are blessed with good fortune."
+  },
+  {
+    "id": "saturn_house_10",
+    "category": "career",
+    "condition": {
+      "type": "planet_house",
+      "planet": "Saturn",
+      "house": 10
+    },
+    "title": "Saturn in the 10th House",
+    "prediction": "Saturn in the house of career indicates success achieved through hard work, discipline, and perseverance. You take your professional duties very seriously and may experience steady, slow rise to power. You excel in structured or highly responsible roles."
+  },
+  {
+    "id": "venus_house_7",
+    "category": "relationships",
+    "condition": {
+      "type": "planet_house",
+      "planet": "Venus",
+      "house": 7
+    },
+    "title": "Venus in the 7th House",
+    "prediction": "Venus in the house of partnership indicates a strong desire for love, harmony, and companionship. You seek a partner who is attractive, cultured, and balanced. This placement brings joy, cooperation, and beauty to marriage and business partnerships."
+  },
+  {
+    "id": "mercury_house_2",
+    "category": "wealth",
+    "condition": {
+      "type": "planet_house",
+      "planet": "Mercury",
+      "house": 2
+    },
+    "title": "Mercury in the 2nd House",
+    "prediction": "Mercury in the house of finances indicates that your earning capacity is tied to communication, intelligence, writing, or trade. You are clever with financial planning and have good analytical skills regarding investments."
+  },
+  {
+    "id": "mars_house_1",
+    "category": "personality",
+    "condition": {
+      "type": "planet_house",
+      "planet": "Mars",
+      "house": 1
+    },
+    "title": "Mars in the 1st House",
+    "prediction": "Mars in the first house makes you energetic, assertiveness-driven, and highly active. You possess a strong physical vitality and a competitive spirit. Watch out for impatience, headstrong behavior, or a tendency to get into conflicts easily."
+  },
+  {
+    "id": "lord_1_house_10",
+    "category": "career",
+    "condition": {
+      "type": "lord_house",
+      "house": 1,
+      "targetHouse": 10
+    },
+    "title": "Lord of 1st House in 10th House",
+    "prediction": "When the Lord of the Ascendant sits in the 10th House, your self-expression and life purpose are closely tied to your career and public standing. You will seek to make a visible impact, and you will likely find success and respect through your professional endeavors."
+  },
+  {
+    "id": "lord_1_house_1",
+    "category": "personality",
+    "condition": {
+      "type": "lord_house",
+      "house": 1,
+      "targetHouse": 1
+    },
+    "title": "Lord of 1st House in 1st House",
+    "prediction": "With your chart ruler placed in your first house, you possess strong self-reliance, vitality, and a clear sense of identity. You are highly independent, self-motivated, and capable of overcoming obstacles through your own direct action."
+  },
+  {
+    "id": "lord_7_house_1",
+    "category": "relationships",
+    "condition": {
+      "type": "lord_house",
+      "house": 7,
+      "targetHouse": 1
+    },
+    "title": "Lord of 7th House in 1st House",
+    "prediction": "The ruler of your partnership house located in the Ascendant indicates that relationships play a pivotal role in shaping your personality. Your spouse or partner will be deeply devoted to you, and partnerships are central to your self-development."
+  },
+  {
+    "id": "lord_9_house_9",
+    "category": "wealth",
+    "condition": {
+      "type": "lord_house",
+      "house": 9,
+      "targetHouse": 9
+    },
+    "title": "Lord of 9th House in 9th House",
+    "prediction": "The ruler of the 9th house in its own house is a highly auspicious placement for luck, higher knowledge, and spiritual growth. You will have a natural interest in philosophy, travel, and ethics, and enjoy protection and support throughout life's journeys."
+  },
+  {
+    "id": "lord_10_house_11",
+    "category": "wealth",
+    "condition": {
+      "type": "lord_house",
+      "house": 10,
+      "targetHouse": 11
+    },
+    "title": "Lord of 10th House in 11th House",
+    "prediction": "This combination indicates that your career will lead to excellent financial gains, networking opportunities, and the fulfillment of desires. You benefit from professional associations, social circles, and influential friendships."
+  },
+  {
+    "id": "rahu_house_11",
+    "category": "wealth",
+    "condition": {
+      "type": "planet_house",
+      "planet": "Rahu",
+      "house": 11
+    },
+    "title": "Rahu in the 11th House",
+    "prediction": "Rahu in the 11th house is a classical placement for worldly success and material achievements. You have unconventional goals and ambitions. You can gain wealth through foreign connections, technology, or large networks of people."
+  },
+  {
+    "id": "ketu_house_12",
+    "category": "personality",
+    "condition": {
+      "type": "planet_house",
+      "planet": "Ketu",
+      "house": 12
+    },
+    "title": "Ketu in the 12th House",
+    "prediction": "This is considered a highly spiritual placement for Ketu. It represents a strong potential for spiritual liberation (Moksha), meditation, and deep interest in the occult or metaphysical dimensions. You enjoy times of solitude and introspection."
+  }
+]

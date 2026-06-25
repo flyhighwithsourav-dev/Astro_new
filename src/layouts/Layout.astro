@@ -1,0 +1,89 @@
+---
+// C:\Users\SnowIce\Documents\antigravity\keen-hopper\src\layouts\Layout.astro
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  activeTab?: 'dashboard' | 'new_chart' | 'settings';
+}
+
+const { title, activeTab = 'dashboard' } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="generator" content={Astro.generator} />
+  
+  <!-- SEO Meta Tags -->
+  <title>{title} | Cosmic Astrologer</title>
+  <meta name="description" content="Calculate your birth chart offline with a rule-based PLR prediction engine. A modern Material Design astrology app.">
+  <meta name="theme-color" content="#0b0717">
+</head>
+<body>
+  <div class="android-wrapper animate-fade-in">
+    <!-- App Bar -->
+    <header class="app-bar">
+      <h1>Cosmic Astrology</h1>
+      <div class="app-bar-actions">
+        <span class="badge">MVP v1.0</span>
+      </div>
+    </header>
+    
+    <!-- Main Content Area -->
+    <main class="content-area">
+      <slot />
+    </main>
+    
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <a href="/" class={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} id="nav-dashboard">
+        <div class="nav-icon-container">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <span>Dashboard</span>
+      </a>
+      
+      <a href="/new-chart" class={`nav-item ${activeTab === 'new_chart' ? 'active' : ''}`} id="nav-new-chart">
+        <div class="nav-icon-container">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+        </div>
+        <span>New Chart</span>
+      </a>
+      
+      <a href="/settings" class={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} id="nav-settings">
+        <div class="nav-icon-container">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </div>
+        <span>Settings</span>
+      </a>
+    </nav>
+  </div>
+</body>
+</html>
+
+<style>
+  .app-bar-actions {
+    display: flex;
+    align-items: center;
+  }
+
+  .content-area {
+    width: 100%;
+    flex: 1;
+  }
+</style>

@@ -1,0 +1,299 @@
+---
+// C:\Users\SnowIce\Documents\antigravity\keen-hopper\src\components\KundliChart.astro
+import type { HoroscopeData } from '../lib/astrologyEngine';
+import { ZODIAC_SIGNS } from '../lib/astrologyEngine';
+
+interface Props {
+  horoscope: HoroscopeData;
+  style?: 'north_indian' | 'south_indian';
+}
+
+const { horoscope, style = 'north_indian' } = Astro.Props;
+
+// Planet abbreviation mapper
+const getAbbreviation = (name: string) => {
+  switch (name) {
+    case 'Sun': return 'Su';
+    case 'Moon': return 'Mo';
+    case 'Mercury': return 'Me';
+    case 'Venus': return 'Ve';
+    case 'Mars': return 'Ma';
+    case 'Jupiter': return 'Ju';
+    case 'Saturn': return 'Sa';
+    case 'Rahu': return 'Ra';
+    case 'Ketu': return 'Ke';
+    default: return name.substring(0, 2);
+  }
+};
+
+// Organize planets by house for North Indian
+const planetsByHouse = Array.from({ length: 12 }, () => [] as string[]);
+horoscope.planets.forEach(p => {
+  // house is 1-12, map to index 0-11
+  planetsByHouse[p.house - 1].push(getAbbreviation(p.name) + (p.isRetrograde ? ' (R)' : ''));
+});
+
+// Organize planets by sign for South Indian
+// Zodiac signs: 0 = Aries, ..., 11 = Pisces
+const planetsBySign = Array.from({ length: 12 }, () => [] as string[]);
+horoscope.planets.forEach(p => {
+  planetsBySign[p.signIndex].push(getAbbreviation(p.name) + (p.isRetrograde ? ' (R)' : ''));
+});
+
+// Coordinates for North Indian house centers (viewBox 300x300)
+const houseCenters = [
+  { x: 150, y: 80 },  // House 1
+  { x: 75, y: 40 },   // House 2
+  { x: 40, y: 80 },   // House 3
+  { x: 80, y: 150 },  // House 4
+  { x: 40, y: 220 },  // House 5
+  { x: 75, y: 260 },  // House 6
+  { x: 150, y: 220 }, // House 7
+  { x: 225, y: 260 }, // House 8
+  { x: 260, y: 220 }, // House 9
+  { x: 220, y: 150 }, // House 10
+  { x: 260, y: 80 },  // House 11
+  { x: 225, y: 40 }   // House 12
+];
+
+// Coordinates for North Indian house sign numbers placement
+const signNumberPlacements = [
+  { x: 150, y: 110 }, // House 1
+  { x: 95, y: 55 },   // House 2
+  { x: 55, y: 95 },   // House 3
+  { x: 110, y: 150 }, // House 4
+  { x: 55, y: 205 },  // House 5
+  { x: 95, y: 245 },  // House 6
+  { x: 150, y: 190 }, // House 7
+  { x: 205, y: 245 }, // House 8
+  { x: 245, y: 205 }, // House 9
+  { x: 190, y: 150 }, // House 10
+  { x: 245, y: 95 },  // House 11
+  { x: 205, y: 55 }   // House 12
+];
+
+// Map of sign positions in the 4x4 South Indian Grid
+// 12 boxes, Pisces is top-left index 11. Clockwise: Pisces (0,0), Aries (1,0)...
+const southIndianBoxes = [
+  { signIdx: 11, name: 'Pisces', x: 0, y: 0 },
+  { signIdx: 0, name: 'Aries', x: 100, y: 0 },
+  { signIdx: 1, name: 'Taurus', x: 200, y: 0 },
+  { signIdx: 2, name: 'Gemini', x: 300, y: 0 },
+  { signIdx: 3, name: 'Cancer', x: 300, y: 100 },
+  { signIdx: 4, name: 'Leo', x: 300, y: 200 },
+  { signIdx: 5, name: 'Virgo', x: 300, y: 300 },
+  { signIdx: 6, name: 'Libra', x: 200, y: 300 },
+  { signIdx: 7, name: 'Scorpio', x: 100, y: 300 },
+  { signIdx: 8, name: 'Sagittarius', x: 0, y: 300 },
+  { signIdx: 9, name: 'Capricorn', x: 0, y: 200 },
+  { signIdx: 10, name: 'Aquarius', x: 0, y: 100 }
+];
+---
+
+<div class="chart-container">
+  {style === 'north_indian' ? (
+    /* NORTH INDIAN STYLE CHART (DIAMOND) */
+    <svg viewBox="0 0 300 300" class="kundli-svg north-indian">
+      <defs>
+        <radialGradient id="space-grad" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stop-color="#1b1236" />
+          <stop offset="100%" stop-color="#0f0924" />
+        </radialGradient>
+      </defs>
+      
+      <!-- Background -->
+      <rect width="300" height="300" rx="16" fill="url(#space-grad)" stroke="var(--md-sys-color-primary)" stroke-width="2" />
+      
+      <!-- Diagonals -->
+      <line x1="0" y1="0" x2="300" y2="300" stroke="rgba(255, 217, 102, 0.4)" stroke-width="1.5" />
+      <line x1="300" y1="0" x2="0" y2="300" stroke="rgba(255, 217, 102, 0.4)" stroke-width="1.5" />
+      
+      <!-- Inner Diamond -->
+      <polygon points="150,0 300,150 150,300 0,150" fill="none" stroke="var(--md-sys-color-primary)" stroke-width="2" />
+      
+      <!-- House Sign Numbers & Planets -->
+      {houseCenters.map((center, idx) => {
+        // Find zodiac sign number for this house (1-12)
+        const signNum = (horoscope.ascendant.signIndex + idx) % 12 + 1;
+        const planets = planetsByHouse[idx];
+        const numLoc = signNumberPlacements[idx];
+        const isLagna = idx === 0;
+        
+        return (
+          <g>
+            <!-- Sign Number -->
+            <text x={numLoc.x} y={numLoc.y} class="sign-number" text-anchor="middle" dominant-baseline="middle">
+              {signNum}
+            </text>
+            
+            <!-- Planets List -->
+            <g transform={`translate(${center.x}, ${center.y})`}>
+              {isLagna && (
+                <text x="0" y="-18" class="lagna-tag" text-anchor="middle" dominant-baseline="middle">
+                  Asc
+                </text>
+              )}
+              {planets.map((planet, pIdx) => {
+                // Distribute multiple planets vertically
+                const yOffset = pIdx * 13 - ((planets.length - 1) * 13) / 2;
+                return (
+                  <text x="0" y={yOffset} class="planet-text" text-anchor="middle" dominant-baseline="middle">
+                    {planet}
+                  </text>
+                );
+              })}
+            </g>
+          </g>
+        );
+      })}
+    </svg>
+  ) : (
+    /* SOUTH INDIAN STYLE CHART (GRID) */
+    <svg viewBox="0 0 400 400" class="kundli-svg south-indian">
+      <defs>
+        <radialGradient id="space-grad-si" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stop-color="#1b1236" />
+          <stop offset="100%" stop-color="#0f0924" />
+        </radialGradient>
+      </defs>
+      
+      <!-- Background -->
+      <rect width="400" height="400" rx="16" fill="url(#space-grad-si)" stroke="var(--md-sys-color-primary)" stroke-width="2" />
+      
+      <!-- Inner Grid Box (leaving center empty) -->
+      <rect x="100" y="100" width="200" height="200" fill="#0b0717" stroke="var(--md-sys-color-primary)" stroke-width="1.5" />
+      
+      <!-- Outer Borders for individual grid boxes -->
+      {southIndianBoxes.map((box) => {
+        const planets = planetsBySign[box.signIdx];
+        const isLagna = box.signIdx === horoscope.ascendant.signIndex;
+        
+        return (
+          <g>
+            <!-- Box border -->
+            <rect x={box.x} y={box.y} width="100" height="100" fill="none" stroke="rgba(255, 217, 102, 0.4)" stroke-width="1.5" />
+            
+            <!-- Sign Abbreviation / Name -->
+            <text x={box.x + 8} y={box.y + 16} class="si-sign-name">
+              {ZODIAC_SIGNS[box.signIdx].substring(0, 3)}
+            </text>
+            
+            <!-- Lagna Line and Text -->
+            {isLagna && (
+              <g>
+                <line x1={box.x} y1={box.y + 100} x2={box.x + 100} y2={box.y} stroke="rgba(255, 217, 102, 0.6)" stroke-dasharray="2,2" stroke-width="1.5" />
+                <text x={box.x + 50} y={box.y + 25} class="si-lagna-tag" text-anchor="middle" dominant-baseline="middle">
+                  ASC
+                </text>
+              </g>
+            )}
+            
+            <!-- Planets List inside the box -->
+            <g transform={`translate(${box.x + 50}, ${box.y + 60})`}>
+              {planets.map((planet, pIdx) => {
+                const yOffset = pIdx * 13 - ((planets.length - 1) * 13) / 2;
+                return (
+                  <text x="0" y={yOffset} class="si-planet-text" text-anchor="middle" dominant-baseline="middle">
+                    {planet}
+                  </text>
+                );
+              })}
+            </g>
+          </g>
+        );
+      })}
+      
+      <!-- Center Info -->
+      <g transform="translate(200, 200)">
+        <text x="0" y="-20" class="si-center-title" text-anchor="middle">
+          {horoscope.name}
+        </text>
+        <text x="0" y="5" class="si-center-sub" text-anchor="middle">
+          {horoscope.birthDate}
+        </text>
+        <text x="0" y="25" class="si-center-sub" text-anchor="middle">
+          {horoscope.birthTime}
+        </text>
+      </g>
+    </svg>
+  )}
+</div>
+
+<style>
+  .chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    width: 100%;
+  }
+
+  .kundli-svg {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+  }
+
+  /* North Indian Specific Styles */
+  .sign-number {
+    fill: #8f8a9e;
+    font-family: var(--font-family-title);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .lagna-tag {
+    fill: var(--md-sys-color-secondary);
+    font-family: var(--font-family-title);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .planet-text {
+    fill: #ffffff;
+    font-family: var(--font-family-body);
+    font-size: 11px;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+
+  /* South Indian Specific Styles */
+  .si-sign-name {
+    fill: #8f8a9e;
+    font-family: var(--font-family-title);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .si-lagna-tag {
+    fill: var(--md-sys-color-secondary);
+    font-family: var(--font-family-title);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .si-planet-text {
+    fill: #ffffff;
+    font-family: var(--font-family-body);
+    font-size: 11px;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+
+  .si-center-title {
+    fill: var(--md-sys-color-primary);
+    font-family: var(--font-family-title);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .si-center-sub {
+    fill: var(--md-sys-color-on-surface-variant);
+    font-family: var(--font-family-body);
+    font-size: 10px;
+  }
+</style>
