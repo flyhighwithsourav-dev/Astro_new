@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Cosmic Astrologer</string>
+    <string name="title_activity_main">Cosmic Astrologer</string>
+    <string name="package_name">com.cosmic.astrology</string>
+    <string name="custom_url_scheme">com.cosmic.astrology</string>
+</resources>
